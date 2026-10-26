@@ -30,6 +30,32 @@ jobs:
         run: npx cap add android
       - name: Sync web app to Android
         run: npx cap sync android
+        
+      - name: Add required media permission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          content = manifest.read_text()
+          permission = 'android.permission.READ_EXTERNAL_STORAGE'
+
+          if permission not in content:
+              content, count = re.subn(
+                  r'(<application\b)',
+                  '    <uses-permission android:name="' + permission + '" />\n    \\1',
+                  content,
+                  count=1
+              )
+              if count != 1:
+                  raise RuntimeError("Could not find application tag in AndroidManifest.xml")
+              manifest.write_text(content)
+              print("Media permission added.")
+          else:
+              print("Media permission already exists.")
+          PY
+
       - name: Build debug APK
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - name: Upload APK artifact
