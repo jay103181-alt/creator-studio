@@ -31,6 +31,7 @@ jobs:
       - name: Sync web app to Android
         run: npx cap sync android
         
+     
       - name: Add required media permission
         run: |
           python3 - <<'PY'
@@ -41,19 +42,20 @@ jobs:
           content = manifest.read_text()
           permission = 'android.permission.READ_EXTERNAL_STORAGE'
 
-          if permission not in content:
-              content, count = re.subn(
-                  r'(<application\b)',
-                  '    <uses-permission android:name="' + permission + '" />\n    \\1',
-                  content,
-                  count=1
-              )
-              if count != 1:
-                  raise RuntimeError("Could not find application tag in AndroidManifest.xml")
-              manifest.write_text(content)
-              print("Media permission added.")
-          else:
-              print("Media permission already exists.")
+          content = re.sub(
+              r'\s*<uses-permission\s+android:name=["\']android\.permission\.READ_EXTERNAL_STORAGE["\'](?:\s+android:maxSdkVersion=["\']\d+["\'])?\s*/>',
+              '',
+              content
+          )
+
+          match = re.search(r'<manifest\b[^>]*>', content)
+          if not match:
+              raise RuntimeError("Android manifest tag not found")
+
+          insertion = '\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />'
+          content = content[:match.end()] + insertion + content[match.end():]
+          manifest.write_text(content)
+          print("READ_EXTERNAL_STORAGE permission configured for Android API 32 and below.")
           PY
 
       - name: Build debug APK
