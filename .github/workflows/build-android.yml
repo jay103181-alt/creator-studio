@@ -58,8 +58,15 @@ jobs:
           print("READ_EXTERNAL_STORAGE permission configured for Android API 32 and below.")
           PY
 
+      
       - name: Build debug APK
-        run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+        run: |
+          echo "=== Android manifest permissions ==="
+          grep -n "uses-permission" android/app/src/main/AndroidManifest.xml || true
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
