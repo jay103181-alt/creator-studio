@@ -6,10 +6,12 @@
   "scripts": {
     "build": "vite build"
   },
-  "dependencies": {
-    "@capacitor/android": "^7.4.3",
-    "@capacitor/core": "^7.4.3",
-    "@whiteguru/capacitor-plugin-video-editor": "^7.1.1"
+ "dependencies": {
+  "@capacitor/android": "^7.4.3",
+  "@capacitor/core": "^7.4.3",
+  "@whiteguru/capacitor-plugin-video-editor": "^7.1.1",
+  "@capacitor/filesystem": "^7.1.9",
+  "@capacitor-community/media": "^8.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.3",
